@@ -4,12 +4,10 @@ import App from './App.vue'
 import HighchartsVue from 'highcharts-vue'
 import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
-import mapInit from 'highcharts/modules/map'
-import addWorldMap from './js/worldmap'
+import DarkUnica from 'highcharts/themes/dark-unica'
 
 stockInit(Highcharts)
-mapInit(Highcharts)
-addWorldMap(Highcharts)
+DarkUnica(Highcharts)
 
 const app = createApp(App)
 app.use(HighchartsVue)

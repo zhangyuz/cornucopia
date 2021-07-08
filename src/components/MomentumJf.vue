@@ -61,7 +61,7 @@ export default {
 <style scoped>
 .stock {
   position:absolute;
-  width: 98%;
+  width: 100%;
   height: 100%;
   margin: 0 auto
 }
