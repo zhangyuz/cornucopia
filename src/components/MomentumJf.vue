@@ -5,23 +5,40 @@
 <script>
 
 import repo from '../js/repo'
+import dataAdapter from '../js/data'
 
 const stockOptions = {
   rangeSelector: {
-    selected: 1
+    selected: 1,
+    floating: true,
+    enabled: false
   },
   title: {
-    text: 'AAPL Stock Price'
+    text: 'Quantz Momentum'
   },
-  series: [{
-    name: 'AAPL',
-    data: [10, 20, 10, 23, 65, 121, 44, 66, 98, 30, 32, 56, 25, 12, 53],
-    pointStart: Date.UTC(2018, 1, 1),
-    pointInterval: 1000 * 3600 * 24,
-    tooltip: {
-      valueDecimals: 2
-    }
-  }]
+  chart: {
+    scrollablePlotArea:true,
+    type:'spline',
+    spacingTop:0
+  },
+  tooltip: {
+    outside:true,
+    split:true,
+    padding:0
+  },
+  time: {
+    timezoneOffset:-480
+  },
+  navigator:{
+    height:20,
+    margin:8
+  },
+  scrollBar: {
+    enabled:false
+  },
+  credits: {
+    enabled: false
+  }
 }
 
 export default {
@@ -32,7 +49,7 @@ export default {
   },
   methods: {
     receive(data) {
-      console.log(data.data._items)
+      this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
     }
   },
   mounted() {
@@ -43,7 +60,9 @@ export default {
 
 <style scoped>
 .stock {
-  width: 100%;
+  position:absolute;
+  width: 98%;
+  height: 100%;
   margin: 0 auto
 }
 </style>

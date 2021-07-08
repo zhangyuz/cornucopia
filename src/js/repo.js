@@ -30,7 +30,7 @@ function momentum_daily_rank_jf(receive) {
     const start_date = data.data._items[len - 1].cal_date
     console.log(start_date)
     console.log(end_date)
-    const momentum_daily_rank_jf_url = `/momentum_daily_rank_jf_item?max_results=9999999&sort=-trade_date_ms&where={"trade_date_ms":{"$lte":${end_date}}, "trade_date_ms":{"$gte":${start_date}}}`
+    const momentum_daily_rank_jf_url = `/momentum_daily_rank_jf_item?max_results=9999999&sort=trade_date_ms&where={"trade_date_ms":{"$lte":${end_date}}, "trade_date_ms":{"$gte":${start_date}}}`
     axios.get(momentum_daily_rank_jf_url).then((data) => {
       console.log(today_in_YYYYmmdd())
       receive(data)

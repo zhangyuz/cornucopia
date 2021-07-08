@@ -3,7 +3,7 @@
     <div>
       <momentumJf />
     </div>
-    <div class="logos">
+    <!--div class="logos">
       <img class="logo-hc" src="./assets/highcharts_logo.png" alt="Highcharts Logo">
       <img class="logo-vue" src="./assets/vue_logo.png" alt="Vue Logo">
     </div>
@@ -17,14 +17,14 @@
     </div>
     <keep-alive>
       <component :is="currentView"></component>
-    </keep-alive>
+    </keep-alive-->
   </div>
 </template>
 
 <script>
-import Chart from './components/Chart.vue'
-import StockChart from './components/StockChart'
-import MapChart from './components/MapChart'
+// import Chart from './components/Chart.vue'
+// import StockChart from './components/StockChart'
+// import MapChart from './components/MapChart'
 import MomentumJf from './components/MomentumJf'
 
 
@@ -32,14 +32,14 @@ export default {
   name: 'App',
   data () {
     return {
-      selected: 'chart',
-      currentView: 'chart'
+      // selected: 'chart',
+      // currentView: 'chart'
     }
   },
   components: {
-    chart: Chart,
+    /*chart: Chart,
     stockChart: StockChart,
-    mapChart: MapChart,
+    mapChart: MapChart,*/
     momentumJf: MomentumJf
   },
   methods: {
@@ -69,6 +69,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0px;
+  width: 100vw;
+  height: 100vh;
+  position:absolute;
 }
 </style>
