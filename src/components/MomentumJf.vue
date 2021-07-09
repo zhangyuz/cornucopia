@@ -1,5 +1,5 @@
 <template>
-  <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions"></highcharts>
+  <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions" ref="theChart"></highcharts>
 </template>
 
 <script>
@@ -24,7 +24,8 @@ const stockOptions = {
   tooltip: {
     outside:true,
     split:true,
-    padding:0
+    padding:0,
+    shared:false
   },
   time: {
     timezoneOffset:-480
@@ -50,9 +51,11 @@ export default {
   methods: {
     receive(data) {
       this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
+      this.$refs.theChart.chart.hideLoading();
     }
   },
   mounted() {
+    this.$refs.theChart.chart.showLoading();
     repo.rank(this.receive)
   }
 }
