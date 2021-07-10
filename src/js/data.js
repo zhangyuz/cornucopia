@@ -38,7 +38,7 @@ function convertMomentumRankToSeries(ranks) {
     // console.log(serie)
     serieOptions.push(serie)
   }
-  console.log(serieOptions)
+  // console.log(serieOptions)
   return serieOptions
 }
 

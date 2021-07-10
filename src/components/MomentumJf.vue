@@ -1,5 +1,12 @@
 <template>
-  <highcharts class="stock" :constructor-type="'stockChart'" :options="stockOptions" ref="theChart"></highcharts>
+  <div class="horizontal-container">
+    <div class="stock">
+      <highcharts class="mmt-rank-jf-chart" :constructor-type="'stockChart'" :options="stockOptions" ref="theChart"></highcharts>
+    </div>
+    <div class="cur-ranks">
+      sldjkfaldk
+    </div>
+  </div>
 </template>
 
 <script>
@@ -7,7 +14,20 @@
 import repo from '../js/repo'
 import dataAdapter from '../js/data'
 
+function onPointClicked(event) {
+  console.log(event.point.series.name)
+  console.log(event.point.x)
+  console.log(event.point.y)
+}
+
 const stockOptions = {
+  plotOptions:{
+    series:{
+      events:{
+        click:onPointClicked,
+      }
+    }
+  },
   rangeSelector: {
     selected: 1,
     floating: true,
@@ -62,10 +82,27 @@ export default {
 </script>
 
 <style scoped>
+
+.horizontal-container {
+    display: flex;
+    width:100%;
+    height: 100vh;
+}
+
 .stock {
-  position:absolute;
-  width: 100%;
+  display: inline-block;
+  width: 62%;
   height: 100%;
-  margin: 0 auto
+}
+.mmt-rank-jf-chart {
+  position: absolute;
+  width: 68%;
+  height: 100%;
+}
+
+.cur-ranks {
+  display: inline-block;
+  width: 38%;
+  height: 100%;
 }
 </style>

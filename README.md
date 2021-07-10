@@ -1,5 +1,7 @@
 # cornucopia
 
+QuantZ 的界面前端
+
 ## Project setup
 ```
 npm install
@@ -22,3 +24,6 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## Todo
+   1. [ ] 增加盘中实时计算分数

@@ -8,7 +8,7 @@ const axios = require("axios");
 
 axios.defaults.baseURL = 'http://127.0.0.1:5000';
 
-const DURATION = 750
+const DURATION = 500
 
 const trade_date_url = `/trade_calendar_item?max_results=${DURATION}&sort=-cal_date&&where={"exchange":"SSE","cal_date":{"$lte":${Date.now()}}}`
 
