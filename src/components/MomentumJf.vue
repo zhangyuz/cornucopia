@@ -35,9 +35,6 @@ const stockOptions = {
     floating: true,
     enabled: false
   },
-  title: {
-    text: 'Quantz Momentum'
-  },
   chart: {
     scrollablePlotArea:true,
     type:'spline',
