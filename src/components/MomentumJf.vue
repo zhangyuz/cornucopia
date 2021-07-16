@@ -96,7 +96,7 @@ export default {
 }
 .mmt-rank-jf-chart {
   position: absolute;
-  width: 68%;
+  width: 100%;
   height: 100%;
 }
 
