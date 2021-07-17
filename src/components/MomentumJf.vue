@@ -1,9 +1,9 @@
 <template>
   <div class="horizontal-container">
-    <div class="stock">
-      <highcharts class="mmt-rank-jf-chart" :constructor-type="'stockChart'" :options="stockOptions" ref="theChart"></highcharts>
+    <div class="stock-rank-chart">
+      <highcharts class="mmt-rank-chart" :constructor-type="'stockChart'" :options="stockOptions" ref="theRanks"></highcharts>
     </div>
-    <div class="cur-ranks">
+    <div class="cur-mmt-scores-table" ref="theScores">
       sldjkfaldk
     </div>
   </div>
@@ -68,11 +68,11 @@ export default {
   methods: {
     receive(data) {
       this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
-      this.$refs.theChart.chart.hideLoading();
+      this.$refs.theRanks.chart.hideLoading();
     }
   },
   mounted() {
-    this.$refs.theChart.chart.showLoading();
+    this.$refs.theRanks.chart.showLoading();
     repo.rank(this.receive)
   }
 }
@@ -86,18 +86,18 @@ export default {
     height: 100vh;
 }
 
-.stock {
+.stock-rank-chart {
   display: inline-block;
   width: 62%;
   height: 100%;
 }
-.mmt-rank-jf-chart {
+.mmt-rank-chart {
   position: absolute;
   width: 62%;
   height: 100%;
 }
 
-.cur-ranks {
+.cur-mmt-scores-table{
   display: inline-block;
   width: 38%;
   height: 100%;
