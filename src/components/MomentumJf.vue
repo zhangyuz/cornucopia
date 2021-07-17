@@ -33,9 +33,6 @@ const stockOptions = {
     floating: true,
     enabled: false
   },
-  title: {
-    text: 'Quantz Momentum'
-  },
   chart: {
     scrollablePlotArea:true,
     type:'spline',
@@ -96,7 +93,7 @@ export default {
 }
 .mmt-rank-jf-chart {
   position: absolute;
-  width: 100%;
+  width: 62%;
   height: 100%;
 }
 
