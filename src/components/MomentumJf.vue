@@ -13,6 +13,11 @@
 
 import repo from '../js/repo'
 import dataAdapter from '../js/data'
+import Tabulator from 'tabulator-tables'
+
+/**
+ * TODO: tabulator rows 是空的
+ */
 
 function onPointClicked(event) {
   console.log(event.point.series.name)
@@ -62,23 +67,49 @@ const stockOptions = {
 export default {
   data () {
     return {
-      stockOptions: stockOptions
+      stockOptions: stockOptions,
+      theScoreTabulator:null,
+      theScoreTabulatorData:[],
     }
   },
   methods: {
-    receive(data) {
+    receiveMmtRanks(data) {
       this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
       this.$refs.theRanks.chart.hideLoading();
+    },
+    receiveMmtScores(data) {
+      // TODO data to tabulator datas
+      this.theScoreTabulatorData=data
     }
   },
   mounted() {
+    // 显示载入中状态
     this.$refs.theRanks.chart.showLoading();
-    repo.rank(this.receive)
+    // 载入行业评分数据
+    repo.rank(this.receiveMmtRanks)
+    // 初始化行业股票分数数据表
+    this.theScoreTabulator = new Tabulator(this.$refs.theScores,
+      {reactiveData:true, autoColumns:true, data:this.theScoreTabulatorData,
+      layout:'fitColumns', columns:[{title:'行业', field:'index_name', sorter:'string'},
+      {title:'C20', field:'pct_change_20', sorter:'number'},
+      {title:'股票', field:'name', sorter:'string'}]})
+    repo.latestScore(this.receiveMmtScores)
+  },
+  watch: {
+    theScoreTabulatorData(newData) {
+      // oldData = oldData
+      console.log('Score table data changed')
+      console.log(newData)
+      this.theScoreTabulator.replaceData(newData)
+      console.log(this.theScoreTabulator)
+    },
   }
 }
 </script>
 
 <style scoped>
+
+@import '~tabulator-tables/dist/css/tabulator_midnight.min.css';
 
 .horizontal-container {
     display: flex;
