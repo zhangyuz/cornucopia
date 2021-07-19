@@ -1,10 +1,10 @@
 <template>
-  <div class="mttjf-horizontal-container">
-    <div class="stock">
-      <highcharts class="mmt-rank-jf-chart" :constructor-type="'stockChart'" :options="stockOptions" ref="theChart"></highcharts>
+  <div class="horizontal-container">
+    <div class="stock-rank-chart">
+      <highcharts class="mmt-rank-chart" :constructor-type="'stockChart'" :options="stockOptions" ref="theRanks"></highcharts>
     </div>
-    <div class="cur-scores" ref="theScore">
-      Stock Scores Loading......
+    <div class="cur-mmt-scores-table" ref="theScores">
+      sldjkfaldk
     </div>
   </div>
 </template>
@@ -13,13 +13,16 @@
 
 import repo from '../js/repo'
 import dataAdapter from '../js/data'
-import WebDataRocks from 'webdatarocks'
+import Tabulator from 'tabulator-tables'
+
+/**
+ * TODO: tabulator rows 是空的
+ */
 
 function onPointClicked(event) {
   console.log(event.point.series.name)
   console.log(event.point.x)
   console.log(event.point.y)
-  console.log(event)
 }
 
 const stockOptions = {
@@ -65,135 +68,114 @@ export default {
   data () {
     return {
       stockOptions: stockOptions,
-      curScoresPovitTable:null,
+      mmtRanks:null,
+      theScoreTabulator:null,
+      theScoreTabulatorData:[],
     }
   },
   methods: {
-    receiveRanks(data) {
+    receiveMmtRanks(data) {
+      this.mmtRanks = data.data._items
       this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
-      this.$refs.theChart.chart.hideLoading();
+      this.$refs.theRanks.chart.hideLoading();
     },
-    receiveScores(data) {
-      // console.log('Scores')
-      // console.log(data)
-      var report = {
-        dataSource:{
-          data: data, 
-          dataSourceType:'json'
-        },
-        slice: {
-          rows: [{
-                  uniqueName: "index_name",
-              },
-              {
-                uniqueName: "name"
-              }
-          ],
-          "columns": [
-            {
-                "uniqueName": "Measures"
-            }
-          ],
-          "measures": [
-            {
-                "uniqueName": "pct_change_20",
-                "aggregation": "calculated",
-                "caption": "20 Up",
-                "format": "",
-            },
-          ],
-          "expands": {
-            expandAll:false,
-          }
-        },
-        options: {
-            grid: {
-                type: "compact",
-                showHeaders:false,
-                showTotals: false,
-            }
-        },
-        formats: [
-          {
-            "name": "",
-            "decimalPlaces": 3,
-          }
-        ]
+    receiveMmtScores(data) {
+      // TODO data to tabulator datas
+      this.theScoreTabulatorData=data
+    },
+    updateScoresPivotTable() {
+      if (this.mmtRanks != null && this.theScoreTabulatorData.length > 0) {
+        this.theScoreTabulator.replaceData(
+          dataAdapter.mmtScrores2Pivot(this.theScoreTabulatorData, this.mmtRanks))
+      } else {
+        console.log('Skip updating scores pivot table cause of invalid data')
       }
-      // this.curScoresPovitTable.updateData({data:data, dataSourceType: "json"})
-      this.curScoresPovitTable.setReport(report)
     }
   },
   mounted() {
-    this.$refs.theChart.chart.showLoading();
-    repo.rank(this.receiveRanks)
-    this.curScoresPovitTable = new WebDataRocks({
-      container: this.$refs.theScore,
-      width: 512,
-      height: '100%',
-      // toolbar:true,
-      report: {
-        slice: {
-          rows: [{
-                  uniqueName: "index_name",
-              },
-              {
-                  uniqueName: "ts_code",
-              }
-          ],
-          columns: [
-            {uniqueName: "name"},
-            {uniqueName: "pct_change_20"}
-          ],
-          "expands": {
-            expandAll:true,
-          }
-        },
-        options: {
-            grid: {
-                type: "compact",
-                showHeaders:false,
-                showTotals: false,
-            }
-        }
-      }
-    });
-    repo.latestScore(this.receiveScores)
+    // 显示载入中状态
+    this.$refs.theRanks.chart.showLoading();
+    // 载入行业评分数据
+    repo.rank(this.receiveMmtRanks)
+    // 初始化行业股票分数数据表
+    this.theScoreTabulator = new Tabulator(this.$refs.theScores,
+      {reactiveData:true,
+        autoColumns:true,
+        data:this.theScoreTabulatorData,
+        layout:'fitColumns',
+        columns:[{title:'Section', field:'index_name', sorter:'string'},
+          {title:'SC', field:'score', sorter:'number'},
+          {title:'RK', field:'rank', sorter:'number'},
+          {title:'SD', field:'score_diff', sorter:'number'},
+          {title:'RD', field:'rank_diff', sorter:'number'}],
+        rowFormatter:function(row){
+        //create and style holder elements
+          var holderEl = document.createElement("div");
+          var tableEl = document.createElement("div");
+          holderEl.style.boxSizing = "border-box";
+          holderEl.style.padding = "1px 1px 1px 1px";
+          holderEl.style.borderTop = "1px solid #F33";
+          holderEl.style.borderBotom = "1px solid #F33";
+          holderEl.style.background = "#Fdd";
+          tableEl.style.border = "1px solid #F33";
+          holderEl.appendChild(tableEl);
+          row.getElement().appendChild(holderEl);
+          new Tabulator(tableEl, {
+            layout:"fitColumns",
+            data:row.getData().members,
+            columns:[
+              {title:"Name", field:"name"},
+              {title:"C20", field:"pct_change_20", sorter:'number'},
+            ]
+       })
+    },
+        })
+    repo.latestScore(this.receiveMmtScores)
   },
-  /*
-  beforeUpdate() {
-    return false;
-  }*/
+  watch: {
+    theScoreTabulatorData(newData) {
+      // oldData = oldData
+      if (newData != null){
+        console.log('Score table data changed')
+      }
+      // console.log(newData)
+      this.updateScoresPivotTable()
+    },
+    mmtRanks(newData) {
+      if (newData != null) {
+        console.log('Ranks data arrived')
+      }
+      // console.log(newData)
+      this.updateScoresPivotTable()
+    }
+  }
 }
 </script>
 
 <style scoped>
 
-@import '~webdatarocks/theme/dark/webdatarocks.min.css';
+@import '~tabulator-tables/dist/css/tabulator_midnight.min.css';
 
-
-.mttjf-horizontal-container {
+.horizontal-container {
     display: flex;
     width:100%;
     height: 100vh;
 }
 
-.stock {
+.stock-rank-chart {
   display: inline-block;
-  width: 62%;
+  width: 70%;
   height: 100%;
 }
-.mmt-rank-jf-chart {
+.mmt-rank-chart {
   position: absolute;
-  width: 68%;
+  width: 70%;
   height: 100%;
 }
 
-.cur-scores {
+.cur-mmt-scores-table{
   display: inline-block;
-  width: 38%;
+  width: 30%;
   height: 100%;
-  padding-left: 48px;
-  margin-left: 32px;
 }
 </style>
