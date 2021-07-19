@@ -68,18 +68,28 @@ export default {
   data () {
     return {
       stockOptions: stockOptions,
+      mmtRanks:null,
       theScoreTabulator:null,
       theScoreTabulatorData:[],
     }
   },
   methods: {
     receiveMmtRanks(data) {
+      this.mmtRanks = data.data._items
       this.stockOptions.series = dataAdapter.mmtRanks2Series(data.data._items)
       this.$refs.theRanks.chart.hideLoading();
     },
     receiveMmtScores(data) {
       // TODO data to tabulator datas
       this.theScoreTabulatorData=data
+    },
+    updateScoresPivotTable() {
+      if (this.mmtRanks != null && this.theScoreTabulatorData.length > 0) {
+        this.theScoreTabulator.replaceData(
+          dataAdapter.mmtScrores2Pivot(this.theScoreTabulatorData, this.mmtRanks))
+      } else {
+        console.log('Skip updating scores pivot table cause of invalid data')
+      }
     }
   },
   mounted() {
@@ -89,20 +99,55 @@ export default {
     repo.rank(this.receiveMmtRanks)
     // 初始化行业股票分数数据表
     this.theScoreTabulator = new Tabulator(this.$refs.theScores,
-      {reactiveData:true, autoColumns:true, data:this.theScoreTabulatorData,
-      layout:'fitColumns', columns:[{title:'行业', field:'index_name', sorter:'string'},
-      {title:'C20', field:'pct_change_20', sorter:'number'},
-      {title:'股票', field:'name', sorter:'string'}]})
+      {reactiveData:true,
+        autoColumns:true,
+        data:this.theScoreTabulatorData,
+        layout:'fitColumns',
+        columns:[{title:'Section', field:'index_name', sorter:'string'},
+          {title:'SC', field:'score', sorter:'number'},
+          {title:'RK', field:'rank', sorter:'number'},
+          {title:'SD', field:'score_diff', sorter:'number'},
+          {title:'RD', field:'rank_diff', sorter:'number'}],
+        rowFormatter:function(row){
+        //create and style holder elements
+          var holderEl = document.createElement("div");
+          var tableEl = document.createElement("div");
+          holderEl.style.boxSizing = "border-box";
+          holderEl.style.padding = "1px 1px 1px 1px";
+          holderEl.style.borderTop = "1px solid #F33";
+          holderEl.style.borderBotom = "1px solid #F33";
+          holderEl.style.background = "#Fdd";
+          tableEl.style.border = "1px solid #F33";
+          holderEl.appendChild(tableEl);
+          row.getElement().appendChild(holderEl);
+          new Tabulator(tableEl, {
+            layout:"fitColumns",
+            data:row.getData().members,
+            columns:[
+              {title:"Name", field:"name"},
+              {title:"C20", field:"pct_change_20", sorter:'number'},
+            ]
+       })
+    },
+        })
     repo.latestScore(this.receiveMmtScores)
   },
   watch: {
     theScoreTabulatorData(newData) {
       // oldData = oldData
-      console.log('Score table data changed')
-      console.log(newData)
-      this.theScoreTabulator.replaceData(newData)
-      console.log(this.theScoreTabulator)
+      if (newData != null){
+        console.log('Score table data changed')
+      }
+      // console.log(newData)
+      this.updateScoresPivotTable()
     },
+    mmtRanks(newData) {
+      if (newData != null) {
+        console.log('Ranks data arrived')
+      }
+      // console.log(newData)
+      this.updateScoresPivotTable()
+    }
   }
 }
 </script>
@@ -119,18 +164,18 @@ export default {
 
 .stock-rank-chart {
   display: inline-block;
-  width: 62%;
+  width: 70%;
   height: 100%;
 }
 .mmt-rank-chart {
   position: absolute;
-  width: 62%;
+  width: 70%;
   height: 100%;
 }
 
 .cur-mmt-scores-table{
   display: inline-block;
-  width: 38%;
+  width: 30%;
   height: 100%;
 }
 </style>
