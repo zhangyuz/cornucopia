@@ -15,14 +15,11 @@ import repo from '../js/repo'
 import dataAdapter from '../js/data'
 import Tabulator from 'tabulator-tables'
 
-/**
- * TODO: tabulator rows 是空的
- */
-
 function onPointClicked(event) {
-  console.log(event.point.series.name)
-  console.log(event.point.x)
-  console.log(event.point.y)
+  // console.log(event.point.series.name)
+  // console.log(event.point.x)
+  // console.log(event.point.y)
+  repo.score(event.point.x, theComponent.receiveMmtScores)
 }
 
 const stockOptions = {
@@ -64,6 +61,8 @@ const stockOptions = {
   }
 }
 
+var theComponent
+
 export default {
   data () {
     return {
@@ -93,6 +92,7 @@ export default {
     }
   },
   mounted() {
+    theComponent = this
     // 显示载入中状态
     this.$refs.theRanks.chart.showLoading();
     // 载入行业评分数据
@@ -150,6 +150,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scoped>
