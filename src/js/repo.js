@@ -8,7 +8,10 @@ const axios = require("axios");
 // const dataForge = require("data-forge");
 
 if (process.env.NODE_ENV === 'production') {
-    axios.defaults.baseURL = 'https://www.zhangyuzheng.com/api/';
+    // 这个地址是基于ssh转发的地址，若使用域名发布，需更新此地址
+    // ssh -v -L 2080:localhost:80   my_jump_server -N
+    // http://localhost:2080 访问
+    axios.defaults.baseURL = 'http://localhost:2080/api/';
 } else {
     axios.defaults.baseURL = 'http://127.0.0.1:5000';
 }
