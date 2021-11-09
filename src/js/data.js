@@ -7,7 +7,7 @@ const dataForge = require('data-forge')
 // 将 reactive Proxy 包装的数据转换为原始数据
 import { toRaw } from '@vue/reactivity'
 
-const RANK_NUM = 18
+const RANK_NUM = 9
 
 /**
  * 将动量评分数组转换为图表需要的序列
@@ -15,7 +15,7 @@ const RANK_NUM = 18
  */
 function convertMomentumRankToSeries(ranks) {
   var ranksDf = new dataForge.DataFrame(toRaw(ranks))
-   // 只选择排名前18的行业
+   // 只选择排名前9的行业
    const dateGroups = ranksDf.groupBy(rank => rank.trade_date)
    const topRanksList = []
    for (var dg of dateGroups) {
@@ -68,7 +68,7 @@ function convertMomentumScores2PivotTable(scores, ranks) {
   scores = toRaw(scores)
   var curRanks = toRaw(ranks).filter(r => r.trade_date===scores[0].trade_date)
   var curRankDf = new dataForge.DataFrame(curRanks)
-  // 只是用分数排名前18的行业
+  // 只是用分数排名前9的行业
   curRanks = curRankDf.orderByDescending(row => row.score).head(RANK_NUM).toArray()
   for (var rank of curRanks) {
     rank.members = scores.filter(s => s.index_code === rank.index_code)
