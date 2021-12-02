@@ -7,7 +7,7 @@ const dataForge = require('data-forge')
 // 将 reactive Proxy 包装的数据转换为原始数据
 import { toRaw } from '@vue/reactivity'
 
-const RANK_NUM = 9
+const RANK_NUM = 12
 
 /**
  * 将动量评分数组转换为图表需要的序列
